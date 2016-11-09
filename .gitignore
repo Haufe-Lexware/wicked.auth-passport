@@ -1,0 +1,4 @@
+certs
+.DS_Store
+node_modules
+sessions

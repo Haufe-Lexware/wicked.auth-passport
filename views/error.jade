@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1= status
+  p= message
+
+  if correlationId
+    p Correlation Id: #{correlationId}

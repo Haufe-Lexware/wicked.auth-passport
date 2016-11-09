@@ -8,17 +8,21 @@ const wicked = require('wicked-sdk');
 
 const utils = require('./utils');
 
-const authenticateWithGoogle = passport.authenticate('google', { scope: ['profile', 'email'] });
-const authenticateCallback = passport.authenticate('google', { failureRedirect: '/auth-server/failure' });
+google.authenticateSettings = {
+    failureRedirect: '/auth-server/failure'
+};
 
-google.init = function (authConfig, authServerName) {
+google.init = function (app, authConfig) {
     debug('init()');
-    google.authServerName = authServerName;
+    google.authServerName = app.get('server_name');
+    google.basePath = app.get('base_path');
     if (!authConfig.google) {
         debug('Not configuring google authentication.');
         return;
     }
-    debug('Attempting to configure google authentication.');
+
+    google.authenticateSettings.failureRedirect = google.basePath + '/failure';
+
     if (!authConfig.google.clientId)
         throw new Error('In auth-server configuration, property "google", the property "clientId" is missing.');
     if (!authConfig.google.clientSecret)
@@ -49,6 +53,9 @@ google.init = function (authConfig, authServerName) {
 
     debug('Configured google authentication.');
 };
+
+const authenticateWithGoogle = passport.authenticate('google', { scope: ['profile', 'email'] });
+const authenticateCallback = passport.authenticate('google', google.authenticateSettings);
 
 google.get('/api/:apiId', utils.verifyClientAndAuthenticate('google', authenticateWithGoogle));
 google.get('/callback', authenticateCallback, utils.authorizeAndRedirect('google', google.authServerName));

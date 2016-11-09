@@ -9,20 +9,27 @@ const http = require('http');
 const passport = require('passport');
 const wicked = require('wicked-sdk');
 
-const google = require('../providers/google');
-const github = require('../providers/github');
-const twitter = require('../providers/twitter');
-const facebook = require('../providers/facebook');
-
 let authServerId = 'auth-passport';
 if (process.env.AUTH_SERVER_NAME) {
     authServerId = process.env.AUTH_SERVER_NAME;
 }
+app.set('server_name', authServerId);
+let authServerPath = '/auth-server';
+if (process.env.AUTH_SERVER_BASEPATH) {
+    authServerPath = process.env.AUTH_SERVER_BASEPATH;
+}
+app.set('base_path', authServerPath);
 
 console.log('Auth Server ID used: ' + authServerId + ', override with AUTH_SERVER_NAME.');
+console.log('Auth Server base path: ' + authServerPath + ', override with AUTH_SERVER_BASEPATH');
 
 var port = normalizePort(process.env.PORT || '3010');
 app.set('port', port);
+
+const google = require('../providers/google');
+const github = require('../providers/github');
+const twitter = require('../providers/twitter');
+const facebook = require('../providers/facebook');
 
 /**
  * Create HTTP server.
@@ -45,10 +52,10 @@ async.series({
     app.authConfig = results.authServerConfig;
     console.log(app.authConfig);
 
-    google.init(app.authConfig, authServerId);
-    github.init(app.authConfig, authServerId);
-    twitter.init(app.authConfig, authServerId);
-    facebook.init(app.authConfig, authServerId);
+    google.init(app, app.authConfig);
+    github.init(app, app.authConfig);
+    twitter.init(app, app.authConfig);
+    facebook.init(app, app.authConfig);
 
     // Simplest kind of serialization and deserialization
     passport.serializeUser(function (user, done) {

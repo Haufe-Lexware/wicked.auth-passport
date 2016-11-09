@@ -1,5 +1,6 @@
 'use strict';
 
+const cors = require('cors');
 const debug = require('debug')('auth-google:app');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -80,26 +81,28 @@ app.initApp = function (callback) {
     // =======================
     // Actual implementation
     // =======================
+    const basePath = app.get('base_path');
 
-    app.use('/auth-server/google', google);
-    app.use('/auth-server/github', github);
-    app.use('/auth-server/twitter', twitter);
-    app.use('/auth-server/facebook', facebook);
+    app.use(basePath + '/google', google);
+    app.use(basePath + '/github', github);
+    app.use(basePath + '/twitter', twitter);
+    app.use(basePath + '/facebook', facebook);
 
-    app.get('/auth-server/profile', function (req, res, next) {
-        debug('/auth-server/profile');
+    // CORS enable this end point
+    app.get(basePath + '/profile', cors(), function (req, res, next) {
+        debug(basePath + '/profile');
 
         if (!req.session ||
             !req.session.userValid ||
             !req.session.passport ||
             !req.session.passport.user)
-            return res.status(400).json({ message: 'You need a valid session to call /profile.' });
+            return res.status(400).json({ message: 'You need a valid session to call ' + basePath + '/profile.' });
 
         res.json(req.session.passport.user);
     });
 
-    app.get('/auth-server/failure', function (req, res, next) {
-        debug('/auth-server/failure');
+    app.get(basePath + '/failure', function (req, res, next) {
+        debug(basePath + '/failure');
 
         let redirectUri = null;
         if (req.session && req.session.redirectUri)

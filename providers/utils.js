@@ -29,7 +29,7 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
     return function (req, res, next) {
         const apiId = req.params.apiId;
         const clientId = req.query.client_id;
-        debug('/auth-server/' + idpName + '/api/' + apiId + '?client_id=' + clientId);
+        debug('/' + idpName + '/api/' + apiId + '?client_id=' + clientId);
 
         if (!clientId)
             return next(utils.makeError('Bad request. Query parameter client_id is missing.', 400));
@@ -55,7 +55,7 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
 
 utils.authorizeAndRedirect = function (idpName, authServerName) {
     return function (req, res, next) {
-        debug('/auth-server/' + idpName + '/callback');
+        debug('/' + idpName + '/callback');
 
         if (!req.session ||
             !req.session.passport ||

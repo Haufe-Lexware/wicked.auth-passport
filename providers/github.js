@@ -10,16 +10,20 @@ const utils = require('./utils');
 
 const github = require('express').Router();
 
-const authenticateWithGithub = passport.authenticate('github', { scope: ['user:email'] });
-const authenticateCallback = passport.authenticate('github', { failureRedirect: '/auth-server/failure' });
+github.authenticateSettings = {
+    failureRedirect: '/auth-server/failure'
+};
 
-github.init = function (authConfig, authServerName) {
+github.init = function (app, authConfig) {
     debug('init()');
-    github.authServerName = authServerName;
+    github.authServerName = app.get('server_name');
+    github.basePath = app.get('base_path');
     if (!authConfig.github) {
         debug('Not configuring github authentication.');
         return;
     }
+
+    github.authenticateSettings.failureRedirect = github.basePath + '/failure'; 
 
     if (!authConfig.github.clientId)
         throw new Error('In auth-server configuration, property "google", the property "clientId" is missing.');
@@ -50,6 +54,9 @@ github.init = function (authConfig, authServerName) {
 
     debug('Configured github authentication.');
 };
+
+const authenticateWithGithub = passport.authenticate('github', { scope: ['user:email'] });
+const authenticateCallback = passport.authenticate('github', github.authenticateSettings);
 
 github.get('/api/:apiId', utils.verifyClientAndAuthenticate('github', authenticateWithGithub));
 github.get('/callback', authenticateCallback, utils.authorizeAndRedirect('github', github.authServerName));

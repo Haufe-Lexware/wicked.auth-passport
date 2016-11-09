@@ -9,14 +9,22 @@ const utils = require('./utils');
 
 const facebook = require('express').Router();
 
-facebook.init = function (authConfig, authServerName) {
+// Will be overridden as soon as the base path is known
+facebook.authenticateSettings = {
+    failureRedirect: '/auth-server/failure'
+};
+
+facebook.init = function (app, authConfig) {
     debug('init()');
-    facebook.authServerName = authServerName;
+    facebook.authServerName = app.get('server_name');
+    facebook.basePath = app.get('base_path');
 
     if (!authConfig.facebook) {
         debug('Not configuring facebook authentication');
         return;
     }
+
+    facebook.authenticateSettings.failureRedirect = facebook.basePath + '/failure';
 
     passport.use('facebook', new FacebookStrategy({
         clientID: authConfig.facebook.clientId,
@@ -42,7 +50,7 @@ facebook.init = function (authConfig, authServerName) {
 };
 
 const authenticateWithFacebook = passport.authenticate('facebook', { scope: ['public_profile', 'email'] });
-const authenticateCallback = passport.authenticate('facebook', { failureRedurect: '/auth-server/failure' });
+const authenticateCallback = passport.authenticate('facebook', facebook.authenticateSettings);
 
 facebook.get('/api/:apiId', utils.verifyClientAndAuthenticate('facebook', authenticateWithFacebook));
 facebook.get('/callback', authenticateCallback, utils.authorizeAndRedirect('facebook', facebook.authServerName));

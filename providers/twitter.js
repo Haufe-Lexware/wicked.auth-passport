@@ -9,20 +9,27 @@ const utils = require('./utils');
 
 const twitter = require('express').Router();
 
-twitter.init = function (authConfig, authServerName) {
+twitter.authenticateSettings = {
+    failureRedirect: '/auth-server/failure'
+};
+
+twitter.init = function (app, authConfig) {
     debug('init()');
-    twitter.authServerName = authServerName;
+    twitter.authServerName = app.get('server_name');
+    twitter.basePath = app.get('base_path');
     if (!authConfig.twitter) {
         debug('Not configuring twitter authentication.');
         return;
     }
+
+    twitter.authenticateSettings.failureRedirect = twitter.basePath + '/failure';
 
     if (!authConfig.twitter.consumerKey)
         throw new Error('In auth-server configuration, property "twitter", the property "consumerKey" is missing.');
     if (!authConfig.twitter.consumerSecret)
         throw new Error('In auth-server configuration, property "twitter", the property "consumerSecret" is missing.');
     if (!authConfig.twitter.callbackUrl)
-        throw new Error('In auth-server configuration, property "google", the property "callbackUrl" is missing.');
+        throw new Error('In auth-server configuration, property "twitter", the property "callbackUrl" is missing.');
 
     passport.use(new TwitterStrategy({
         consumerKey: authConfig.twitter.consumerKey,
@@ -47,7 +54,7 @@ twitter.init = function (authConfig, authServerName) {
 };
 
 const authenticateWithTwitter = passport.authenticate('twitter');
-const authenticateCallback = passport.authenticate('twitter', { failureRedirect: '/auth-server/failure' });
+const authenticateCallback = passport.authenticate('twitter', twitter.authenticateSettings);
 
 twitter.get('/api/:apiId', utils.verifyClientAndAuthenticate('twitter', authenticateWithTwitter));
 twitter.get('/callback', authenticateCallback, utils.authorizeAndRedirect('twitter', twitter.authServerName));

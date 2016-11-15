@@ -1,7 +1,6 @@
 'use strict';
 
-const cors = require('cors');
-const debug = require('debug')('auth-google:app');
+const debug = require('debug')('auth-passport:app');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
@@ -10,18 +9,19 @@ const logger = require('morgan');
 const wicked = require('wicked-sdk');
 const passport = require('passport');
 
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+const session = require('express-session');
+const FileStore = require('session-file-store')(session);
 
 const google = require('./providers/google');
 const github = require('./providers/github');
 const twitter = require('./providers/twitter');
 const facebook = require('./providers/facebook');
+const utils = require('./providers/utils');
 
 // Use default options, see https://www.npmjs.com/package/session-file-store
-var sessionStoreOptions = {};
+const sessionStoreOptions = {};
 
-var SECRET = 'ThisIsASecret';
+const SECRET = 'ThisIsASecret';
 
 let sessionMinutes = 60;
 if (process.env.AUTH_SERVER_SESSION_MINUTES) {
@@ -47,7 +47,13 @@ app.initApp = function (callback) {
 
     if (!wicked.isDevelopmentMode()) {
         app.set('trust proxy', 1);
-        sessionArgs.cookie.secure = true;
+        // TODO: This is not deal-breaking, as we're in a quite secure surrounding anyway,
+        // but currently Kong sends 'X-Forwarded-Proto: http', which is plain wrong. And that
+        // prevents the securing of the cookies. We know it's okay right now, so we do it
+        // anyway - the Auth Server is SSL terminated at HAproxy, and the rest is http but
+        // in the internal network of Docker.
+
+        //sessionArgs.cookie.secure = true;
         console.log("Running in PRODUCTION MODE.");
     } else {
         console.log("=============================");
@@ -89,8 +95,9 @@ app.initApp = function (callback) {
     app.use(basePath + '/facebook', facebook);
 
     // CORS enable this end point
-    app.get(basePath + '/profile', cors(), function (req, res, next) {
+    app.get(basePath + '/profile', utils.cors(), function (req, res, next) {
         debug(basePath + '/profile');
+        debug(req.session);
 
         if (!req.session ||
             !req.session.userValid ||

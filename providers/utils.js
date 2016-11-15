@@ -1,7 +1,10 @@
 'use strict';
 
+const cors = require('cors');
 const debug = require('debug')('auth-passport:utils');
 const wicked = require('wicked-sdk');
+const url = require('url');
+
 const utils = function () { };
 
 utils.makeError = function (message, status) {
@@ -30,6 +33,8 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
         const apiId = req.params.apiId;
         const clientId = req.query.client_id;
         debug('/' + idpName + '/api/' + apiId + '?client_id=' + clientId);
+        debug('req headers:');
+        debug(req.headers);
 
         if (!clientId)
             return next(utils.makeError('Bad request. Query parameter client_id is missing.', 400));
@@ -42,10 +47,14 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
 
             // Yes, we have a valid combination of API and Client ID
             // Store data in the session.
+            const redirectUri = subsInfo.application.redirectUri;
             req.session.apiId = apiId;
             req.session.clientId = clientId;
-            req.session.redirectUri = subsInfo.application.redirectUri;
+            req.session.redirectUri = redirectUri;
             req.session.userValid = false;
+
+            // Remember the host of the redirectUri to allow CORS from it:
+            storeRedirectUriForCors(redirectUri);
 
             // Off you go with passport:
             passportAuthenticate(req, res, next);
@@ -119,5 +128,38 @@ utils.splitName = function (fullName, username) {
     return name;
 };
 
+const _validCorsHosts = {};
+function storeRedirectUriForCors(uri) {
+    debug('storeRedirectUriForCors() ' + uri);
+    try {
+        const parsedUri = url.parse(uri);
+        const host = parsedUri.protocol + '//' + parsedUri.host;
+        _validCorsHosts[host] = true;
+        debug(_validCorsHosts);
+    } catch (ex) {
+        console.error('storeRedirectUriForCors() - Invalid URI: ' + uri);
+    }
+}
+
+function isCorsHostValid(host) {
+    debug('isCorsHostValid(): ' + host);
+    if (_validCorsHosts[host]) {
+        debug('Yes, ' + host + ' is valid.');
+        return true;
+    }
+    debug('*** ' + host + ' is not a valid CORS origin.');
+    return false;
+}
+
+utils.cors = function () {
+    const optionsDelegate = (req, callback) => {
+        const origin = req.header('Origin');
+        if (isCorsHostValid(origin))
+            callback(null, { origin: true }); // Mirror origin, it's okay
+        else
+            callback(null, { origin: false });
+    };
+    return cors(optionsDelegate);
+};
 
 module.exports = utils;

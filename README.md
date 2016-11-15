@@ -56,23 +56,23 @@ This is exactly the same procedure as described for using Google Login for the p
 
 The only thing which really differs (except for names and descriptions) is the callback URI, which has to point to the Authorization Server's callback end point, instead of to the end point of the portal itself. 
 
-If you use the standard setup described below, your callback URL will be: `https://<your api host>/auth-google/callback`.
+If you use the standard setup described below, your callback URL will be: `https://<your api host>/auth-passport/google/callback`.
 
 **Example**: Your portal lives at `https://portal.mycompany.com`, and the API Gateway at `https://api.mycompany.com`, then the Authorization Server's callback URL will be `https://api.mycompany.com/auth-google/callback`.
 
 ### Auth-Server Settings
 
-Add the following file called `auth-google.json` in your configuration's `static/auth-servers` directory:
+Add the following file called `auth-server.json` in your configuration's `static/auth-servers` directory:
 
 ```json
 {
   "id": "auth-passport",
   "name": "auth-passport",
-  "desc": "Authorization Server based on Google Identity",
+  "desc": "Authorization Server based on Social Login",
   "url": "https://${PORTAL_NETWORK_APIHOST}/auth-server/<idp>/api/{{apiId}}?client_id=(your app's client id)",
   "config": {
     "api": {
-      "name": "auth-google",
+      "name": "auth-passport",
       "upstream_url": "http://auth-passport:3010",
       "request_path": "/auth-server"
     },

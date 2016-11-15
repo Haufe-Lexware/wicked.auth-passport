@@ -129,7 +129,7 @@ utils.splitName = function (fullName, username) {
 };
 
 utils.makeUsername = function (fullName, username) {
-    debug('makeUserName(): fullName = ' + fullName + ', username = ' + username);
+    debug('makeUsername(): fullName = ' + fullName + ', username = ' + username);
     if (username)
         return username;
     return fullName;

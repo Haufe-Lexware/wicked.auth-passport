@@ -155,7 +155,7 @@ utils.cors = function () {
     const optionsDelegate = (req, callback) => {
         const origin = req.header('Origin');
         if (isCorsHostValid(origin))
-            callback(null, { origin: true }); // Mirror origin, it's okay
+            callback(null, { origin: true, credentials: true }); // Mirror origin, it's okay
         else
             callback(null, { origin: false });
     };

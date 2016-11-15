@@ -83,7 +83,7 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
         // Now get a token puhlease.
         // Note: We don't use scopes here.
         const userInfo = {
-            authenticated_userid: idpName + ':' + authenticatedUserId,
+            authenticated_userid: authenticatedUserId,
             client_id: clientId,
             api_id: apiId,
             auth_server: authServerName
@@ -126,6 +126,13 @@ utils.splitName = function (fullName, username) {
     }
     debug(name);
     return name;
+};
+
+utils.makeUsername = function (fullName, username) {
+    debug('makeUserName(): fullName = ' + fullName + ', username = ' + username);
+    if (username)
+        return username;
+    return fullName;
 };
 
 const _validCorsHosts = {};

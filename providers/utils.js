@@ -151,13 +151,35 @@ function isCorsHostValid(host) {
     return false;
 }
 
+const _allowOptions = {
+    origin: true,
+    credentials: true,
+    allowedHeaders: [
+        'Accept',
+        'Accept-Encoding',
+        'Connection',
+        'User-Agent',
+        'Content-Type',
+        'Cookie',
+        'Host',
+        'Origin',
+        'Referer'
+    ]
+};
+
+const _denyOptions = {
+    origin: false
+};
+
 utils.cors = function () {
     const optionsDelegate = (req, callback) => {
         const origin = req.header('Origin');
+        debug('in CORS options delegate. req.headers = ');
+        debug(req.headers);
         if (isCorsHostValid(origin))
-            callback(null, { origin: true, credentials: true }); // Mirror origin, it's okay
+            callback(null, _allowOptions); // Mirror origin, it's okay
         else
-            callback(null, { origin: false });
+            callback(null, _denyOptions);
     };
     return cors(optionsDelegate);
 };

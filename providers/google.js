@@ -73,7 +73,6 @@ function normalizeProfile(profile, callback) {
         email_verified: email_verified,
         raw_profile: profile,
     };
-    userProfile.id = profile.id;
     callback(null, userProfile);
 }
 

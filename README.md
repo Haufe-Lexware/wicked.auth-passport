@@ -18,7 +18,7 @@ Things to consider before using this component:
 * Facebook
 * Twitter
 
-(More to come, pull requests are welcome, it's fairly straight forward)
+(More to come, pull requests are welcome, it's fairly straight forward, ADFS is next on list).
 
 ## Add `auth-passport` to your environment (using `docker-compose`)
 

@@ -46,14 +46,14 @@ facebook.init = function (app, authConfig) {
         });
     }));
 
+    const authenticateWithFacebook = passport.authenticate('facebook', { scope: ['public_profile', 'email'] });
+    const authenticateCallback = passport.authenticate('facebook', facebook.authenticateSettings);
+
+    facebook.get('/api/:apiId', utils.verifyClientAndAuthenticate('facebook', authenticateWithFacebook));
+    facebook.get('/callback', authenticateCallback, utils.authorizeAndRedirect('facebook', facebook.authServerName));
+
     debug('Configured facebook authentication.');
 };
-
-const authenticateWithFacebook = passport.authenticate('facebook', { scope: ['public_profile', 'email'] });
-const authenticateCallback = passport.authenticate('facebook', facebook.authenticateSettings);
-
-facebook.get('/api/:apiId', utils.verifyClientAndAuthenticate('facebook', authenticateWithFacebook));
-facebook.get('/callback', authenticateCallback, utils.authorizeAndRedirect('facebook', facebook.authServerName));
 
 function normalizeProfile(profile, accessToken, callback) {
     debug('normalizeProfile()');

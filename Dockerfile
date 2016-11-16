@@ -1,3 +1,3 @@
-FROM node:4-onbuild
+FROM node:6-onbuild
 
 EXPOSE 3010

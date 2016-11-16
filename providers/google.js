@@ -51,14 +51,14 @@ google.init = function (app, authConfig) {
         });
     }));
 
+    const authenticateWithGoogle = passport.authenticate('google', { scope: ['profile', 'email'] });
+    const authenticateCallback = passport.authenticate('google', google.authenticateSettings);
+
+    google.get('/api/:apiId', utils.verifyClientAndAuthenticate('google', authenticateWithGoogle));
+    google.get('/callback', authenticateCallback, utils.authorizeAndRedirect('google', google.authServerName));
+
     debug('Configured google authentication.');
 };
-
-const authenticateWithGoogle = passport.authenticate('google', { scope: ['profile', 'email'] });
-const authenticateCallback = passport.authenticate('google', google.authenticateSettings);
-
-google.get('/api/:apiId', utils.verifyClientAndAuthenticate('google', authenticateWithGoogle));
-google.get('/callback', authenticateCallback, utils.authorizeAndRedirect('google', google.authServerName));
 
 function normalizeProfile(profile, callback) {
     const email = getEmail(profile);

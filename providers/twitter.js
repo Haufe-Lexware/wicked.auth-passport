@@ -50,14 +50,14 @@ twitter.init = function (app, authConfig) {
         });
     }));
 
+    const authenticateWithTwitter = passport.authenticate('twitter');
+    const authenticateCallback = passport.authenticate('twitter', twitter.authenticateSettings);
+
+    twitter.get('/api/:apiId', utils.verifyClientAndAuthenticate('twitter', authenticateWithTwitter));
+    twitter.get('/callback', authenticateCallback, utils.authorizeAndRedirect('twitter', twitter.authServerName));
+
     debug('Configured twitter authentication.');
 };
-
-const authenticateWithTwitter = passport.authenticate('twitter');
-const authenticateCallback = passport.authenticate('twitter', twitter.authenticateSettings);
-
-twitter.get('/api/:apiId', utils.verifyClientAndAuthenticate('twitter', authenticateWithTwitter));
-twitter.get('/callback', authenticateCallback, utils.authorizeAndRedirect('twitter', twitter.authServerName));
 
 function normalizeProfile(profile, accessToken, callback) {
     debug('normalizeProfile()');
@@ -76,7 +76,7 @@ function normalizeProfile(profile, accessToken, callback) {
         email_verified: email_verified,
         raw_profile: profile
     };
-    
+
     /*
     // This requires special permissions to get email addresses; otherwise you just
     // get a strange error message back, after ten to twenty seconds.

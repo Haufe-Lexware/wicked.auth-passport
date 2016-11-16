@@ -52,14 +52,14 @@ github.init = function (app, authConfig) {
         });
     }));
 
+    const authenticateWithGithub = passport.authenticate('github', { scope: ['user:email'] });
+    const authenticateCallback = passport.authenticate('github', github.authenticateSettings);
+
+    github.get('/api/:apiId', utils.verifyClientAndAuthenticate('github', authenticateWithGithub));
+    github.get('/callback', authenticateCallback, utils.authorizeAndRedirect('github', github.authServerName));
+
     debug('Configured github authentication.');
 };
-
-const authenticateWithGithub = passport.authenticate('github', { scope: ['user:email'] });
-const authenticateCallback = passport.authenticate('github', github.authenticateSettings);
-
-github.get('/api/:apiId', utils.verifyClientAndAuthenticate('github', authenticateWithGithub));
-github.get('/callback', authenticateCallback, utils.authorizeAndRedirect('github', github.authServerName));
 
 function normalizeProfile(profile, accessToken, callback) {
     debug('normalizeProfile()');

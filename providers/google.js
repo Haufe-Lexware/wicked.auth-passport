@@ -66,9 +66,10 @@ function normalizeProfile(profile, callback) {
     const userProfile = {
         id: 'google:' + profile.id,
         username: utils.makeUsername(profile.displayName, profile.username),
-        full_name: profile.displayName,
-        first_name: profile.name.givenName,
-        last_name: profile.name.familyName,
+        preferred_username: utils.makeUsername(profile.displayName, profile.username),
+        name: profile.displayName,
+        given_name: profile.name.givenName,
+        family_name: profile.name.familyName,
         email: email,
         email_verified: email_verified,
         raw_profile: profile,

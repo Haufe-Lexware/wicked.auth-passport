@@ -69,9 +69,10 @@ function normalizeProfile(profile, accessToken, callback) {
     const userProfile = {
         id: 'twitter:' + profile.id,
         username: utils.makeUsername(nameGuess.fullName, profile.username),
-        full_name: nameGuess.fullName,
-        first_name: nameGuess.firstName,
-        last_name: nameGuess.lastName,
+        preferred_username: utils.makeUsername(nameGuess.fullName, profile.username),
+        name: nameGuess.fullName,
+        given_name: nameGuess.firstName,
+        family_name: nameGuess.lastName,
         email: email,
         email_verified: email_verified,
         raw_profile: profile

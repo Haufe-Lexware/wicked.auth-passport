@@ -117,7 +117,7 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
                 clientRedirectUri += '&state=' + req.session.state;
 
             // Redirect back, the access token is in the fragment of the URI.
-            res.redirect(result.redirect_uri);
+            res.redirect(clientRedirectUri);
         });
     };
 };

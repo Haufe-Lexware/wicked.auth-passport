@@ -81,6 +81,7 @@ function normalizeProfile(profile, accessToken, callback) {
 
         const userProfile = {
             id: 'github:' + profile.id,
+            sub: 'github:' + profile.id,
             username: utils.makeUsername(nameGuess.fullName, profile.username),
             preferred_username: utils.makeUsername(nameGuess.fullName, profile.username),
             name: nameGuess.fullName,

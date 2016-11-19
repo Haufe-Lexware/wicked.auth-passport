@@ -82,6 +82,7 @@ function normalizeProfile(profile, accessToken, callback) {
 
         const userProfile = {
             id: 'facebook:' + jsonBody.id,
+            sub: 'facebook:' + jsonBody.id,
             username: jsonBody.name,
             preferred_username: jsonBody.name,
             name: jsonBody.name,

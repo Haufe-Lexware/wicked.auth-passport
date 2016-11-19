@@ -65,6 +65,7 @@ function normalizeProfile(profile, callback) {
     const email_verified = !!email;
     const userProfile = {
         id: 'google:' + profile.id,
+        sub: 'google:' + profile.id,
         username: utils.makeUsername(profile.displayName, profile.username),
         preferred_username: utils.makeUsername(profile.displayName, profile.username),
         name: profile.displayName,

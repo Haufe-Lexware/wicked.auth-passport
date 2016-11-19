@@ -170,12 +170,15 @@ The end point will return the following type of JSON structure:
 ```json
 {
   "id": "<idp>:<user-id>",
-  "full_name": "Dan Developer",
-  "first_name": "Dan",
-  "last_name": "Developer",
+  "sub": "<idp>:<user-id>",
+  "username": "<username, if present, otherwise name>",
+  "preferred_username": "<alias for username>",
+  "name": "Dan Developer",
+  "given_name": "Dan",
+  "family_name": "Developer",
   "email": "dan@developer.com",
   "email_verified": true,
-  "raw_profile": { ... }  
+  "raw_profile": { /*...*/ }  
 }
 ```
 
@@ -183,10 +186,12 @@ Please note the following restrictions which apply:
 
 * Twitter will NOT allow retrieval of email addresses via the API without manual checking of your application by Twitter
 * Facebook also allows user creation without an email addresses (for kids, you know, who just have a phone number), so you can't rely on `email` being filled
-* Github allows user creation without an actual name; in that case, the username will be returned as both full name and last name, and first name is left blank
+* Github allows user creation without an actual name; in that case, the username will be returned as both full name and family name, and given name is left blank
 * The same applies to Twitter
 
 This information can be used to pre-fill a registration form in your SPA, but should be allowed to change.
+
+**IMPORTANT**: This end point may be removed in favor of an OpenID Connect type of end point (`/userinfo`) in the future. Currently, some restrictions of the underlying API Gateway does not allow an implementation of OpenID Connect reliably.
 
 ## Tweaking runtime behavior
 

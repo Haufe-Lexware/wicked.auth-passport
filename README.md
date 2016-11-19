@@ -69,7 +69,7 @@ Add the following file called `auth-server.json` in your configuration's `static
   "id": "auth-passport",
   "name": "auth-passport",
   "desc": "Authorization Server based on Social Login",
-  "url": "https://${PORTAL_NETWORK_APIHOST}/auth-server/<idp>/api/{{apiId}}?client_id=(your app's client id)",
+  "url": "https://${PORTAL_NETWORK_APIHOST}/auth-server/<idp>/api/{{apiId}}?client_id=(your app's client id)&response_type=token&redirect_uri=<your app's redirect uri>[&state=<client state>]",
   "config": {
     "api": {
       "name": "auth-passport",
@@ -86,7 +86,7 @@ Add the following file called `auth-server.json` in your configuration's `static
       }
     ]
   },
-  "urlDescription": "In case you need an access token, call the above link with your `client_id` (for the subscribed API) substituted in the link. In case the authentication with Google is successful, you will get called back at your registered `redirect_uri` with the access token attached in the fragment of the URI. Specify the desired `<idp>`, must be one of `google`, `github`, `twitter` or `facebook` (change to match what you need).",
+  "urlDescription": "In case you need an access token, call the above link with your `client_id` (for the subscribed API) substituted in the link. In case the authentication with Google is successful, you will get called back at your registered `redirect_uri` with the access token attached in the fragment of the URI. Specify the desired `<idp>`, must be one of `google`, `github`, `twitter` or `facebook` (change to match what you need). Any `state` you pass in will get passed back with the access token, as an additional query parameter `&state=<...>`.",
   "google": {
     "clientId": "<insert google client ID here>",
     "clientSecret": "<insert google client secret here>",

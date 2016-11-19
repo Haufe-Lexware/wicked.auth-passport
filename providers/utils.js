@@ -32,12 +32,17 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
     return function (req, res, next) {
         const apiId = req.params.apiId;
         const clientId = req.query.client_id;
-        debug('/' + idpName + '/api/' + apiId + '?client_id=' + clientId);
-        debug('req headers:');
-        debug(req.headers);
+        const responseType = req.query.response_type;
+        const givenRedirectUri = req.query.redirect_uri;
+        const givenState = req.query.state;
+        debug('/' + idpName + '/api/' + apiId + '?client_id=' + clientId + '&response_type=' + responseType);
+        if (givenState)
+            debug('given state: ' + givenState);
 
         if (!clientId)
             return next(utils.makeError('Bad request. Query parameter client_id is missing.', 400));
+        if (responseType !== 'token')
+            return next(utils.makeError('Bad request. Parameter response_type is missing or faulty. Currently, only "token" is supported.', 400));
         // Check whether we need to bother Google or not.
         wicked.getSubscriptionByClientId(clientId, apiId, function (err, subsInfo) {
             if (err)
@@ -48,9 +53,19 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
             // Yes, we have a valid combination of API and Client ID
             // Store data in the session.
             const redirectUri = subsInfo.application.redirectUri;
+
+            if (givenRedirectUri && givenRedirectUri !== redirectUri)
+                return next(utils.makeError('Bad request. redirect_uri mismatch.', 400));
+
             req.session.apiId = apiId;
             req.session.clientId = clientId;
             req.session.redirectUri = redirectUri;
+            req.session.responseType = responseType;
+            if (givenState)
+                req.session.state = givenState;
+            else if (req.session.state)
+                delete req.session.state;
+
             req.session.userValid = false;
 
             // Remember the host of the redirectUri to allow CORS from it:
@@ -95,6 +110,11 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
                 return next(utils.makeError('Did not receive a redirect_uri from Kong Adapter.', 500));
             // Yay
             req.session.userValid = true;
+
+            let clientRedirectUri = result.redirect_uri;
+            // If we were passed a state, give that state back
+            if (req.session.state)
+                clientRedirectUri += '&state=' + req.session.state;
 
             // Redirect back, the access token is in the fragment of the URI.
             res.redirect(result.redirect_uri);

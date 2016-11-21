@@ -41,8 +41,8 @@ utils.verifyClientAndAuthenticate = function (idpName, passportAuthenticate) {
 
         if (!clientId)
             return next(utils.makeError('Bad request. Query parameter client_id is missing.', 400));
-        if (responseType !== 'token')
-            return next(utils.makeError('Bad request. Parameter response_type is missing or faulty. Currently, only "token" is supported.', 400));
+        if (responseType !== 'token' && responseType !== 'code')
+            return next(utils.makeError('Bad request. Parameter response_type is missing or faulty. Only "token" and "code" are supported.', 400));
         // Check whether we need to bother Google or not.
         wicked.getSubscriptionByClientId(clientId, apiId, function (err, subsInfo) {
             if (err)
@@ -90,10 +90,11 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
         const authenticatedUserId = req.session.passport.user.id;
         const clientId = req.session.clientId;
         const apiId = req.session.apiId;
+        const responseType = req.session.responseType;
 
         // This shouldn't happen...
-        if (!clientId || !apiId)
-            return next(utils.makeError('Invalid state, client_id and/or API id not known.', 500));
+        if (!clientId || !apiId || !responseType)
+            return next(utils.makeError('Invalid state, client_id, response_type and/or API id not known.', 500));
 
         // Now get a token puhlease.
         // Note: We don't use scopes here.
@@ -103,7 +104,11 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
             api_id: apiId,
             auth_server: authServerName
         };
-        wicked.oauth2AuthorizeImplicit(userInfo, function (err, result) {
+        let authorize = wicked.oauth2GetAuthorizationCode; // responseType === 'code'
+        if (responseType === 'token')
+            authorize = wicked.oauth2AuthorizeImplicit;
+
+        authorize(userInfo, function (err, result) {
             if (err)
                 return next(err);
             if (!result.redirect_uri)
@@ -116,7 +121,9 @@ utils.authorizeAndRedirect = function (idpName, authServerName) {
             if (req.session.state)
                 clientRedirectUri += '&state=' + req.session.state;
 
-            // Redirect back, the access token is in the fragment of the URI.
+            // Redirect back, for the token response, the access token is in the
+            // fragment of the URI. For the code response, the code is in the query
+            // of the URI
             res.redirect(clientRedirectUri);
         });
     };

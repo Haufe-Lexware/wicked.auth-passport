@@ -1,6 +1,6 @@
 {
   "name": "wicked.auth-passport",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "Authorization Server for federating Identites via Passport",
   "main": "bin/auth-passport",
   "scripts": {
@@ -43,7 +43,7 @@
     "passport-twitter": "1.0.4",
     "request": "2.74.0",
     "session-file-store": "0.2.2",
-    "wicked-sdk": "^0.10.12"
+    "wicked-sdk": "^0.11.1"
   },
   "jshintConfig": {
     "node": true,

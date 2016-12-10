@@ -226,3 +226,7 @@ $ export AUTH_SERVER_SESSION_MINUTES=15
 If you have plans to use this component in production, it is (currently) advisable to fork your own version of the code and build your own docker image. This image is built directly off the `master` branch and does not run through any particular integration tests (in contrast to the wicked.haufe.io core components).
 
 Right now, we have no plans on actually releasing a `latest` (aka stable) version of this component.
+
+## Container restart
+
+This container will continuously check for the configuration hash (via the `/confighash` end point of the wicked API), which is done automatically by the wicked SDK. In case a configuration change is detected, the container will quit, in the hope that the orchestration layer will restart it automatically.

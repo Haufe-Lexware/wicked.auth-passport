@@ -8,6 +8,7 @@ const debug = require('debug')('auth-passport:server');
 const http = require('http');
 const passport = require('passport');
 const wicked = require('wicked-sdk');
+const utils = require('../providers/utils.js');
 
 let authServerId = 'auth-passport';
 if (process.env.AUTH_SERVER_NAME) {
@@ -36,6 +37,11 @@ const facebook = require('../providers/facebook');
  */
 
 let server = null;
+
+const wickedOptions = {
+    userAgentName: 'auth-passport',
+    userAgentVersion: utils.getVersion()
+};
 
 async.series({
     init: callback => wicked.initialize(callback),

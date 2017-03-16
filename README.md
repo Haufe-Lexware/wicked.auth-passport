@@ -38,7 +38,6 @@ services:
     depends_on:
     - portal-api
     - portal-kong-adapter
-    command: "npm start"
     restart: unless-stopped
 ```
 
@@ -160,6 +159,41 @@ Extend the `auth-passport.json` file with the following property:
 ```
 
 Then fill in the environment variables per environment. Obtain consumer key and secret and register the callback URL in your [Twitter developer portal](https://apps.twitter.com). The callback URL is `https://<your api host>/auth-server/github/callback`. Facebook accepts multiple callback URLs, so here you may use the same credentials for multiple environments.
+
+### Configuration for ADFS
+
+Extend the `auth-passport.json` file with the following property:
+
+```json
+  "adfs": {
+    "tokenUrl": "https://${ADFS_HOST}/adfs/oauth2/token",
+    "authorizationUrl": "https://${ADFS_HOST}/adfs/oauth2/authorize",
+    "clientId": "${ADFS_AUTH_CLIENTID}",
+    "clientSecret": "${ADFS_CLIENTSECRET}",
+    "callbackUrl": "https://${PORTAL_NETWORK_APIHOST}/auth-server/adfs/callback",
+    "resource": "${ADFS_RESOURCE}",
+    "verifyCert": true,
+    "publicCert": "${ADFS_PUBLICCERT}",
+    "profile": {
+      "id": "upn",
+      // This is needed to make scope mappings work
+      "groups": "group",
+      "family_name": "family_name",
+      "given_name": "given_name",
+      "email": "email",
+      // Add more if you need
+    },
+    // This is optional, and can be designed as needed:
+    "scopes": {
+      "_ADFS_Reader": ["read"],
+      "_ADFS_Writer": ["read", "write"],
+      "_ADFS_Admin": ["read", "write", "admin"]
+      // These are just examples
+    }
+  }
+```
+
+The `scopes` property is optional. Specify ADFS Group names to OAuth2 scope mappings here; this enables you to assign scopes automatically (authorize) via ADFS groups, which can be really useful.
 
 ## Retrieving generic user profile
 

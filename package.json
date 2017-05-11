@@ -1,6 +1,6 @@
 {
   "name": "wicked.auth-passport",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Authorization Server for federating Identites via Passport",
   "main": "bin/auth-passport",
   "scripts": {
@@ -18,7 +18,12 @@
     "wicked",
     "apim",
     "api",
-    "management"
+    "management",
+    "google",
+    "github",
+    "facebook",
+    "twitter",
+    "adfs"
   ],
   "author": "Martin Danielsson <martin.danielsson@haufe-lexware.com>",
   "license": "Apache-2.0",
@@ -35,15 +40,17 @@
     "express": "4.14.0",
     "express-session": "1.14.2",
     "jade": "1.11.0",
+    "jsonwebtoken": "5.7.0",
     "morgan": "1.7.0",
     "passport": "0.3.2",
-    "passport-facebook": "^2.1.1",
+    "passport-facebook": "2.1.1",
     "passport-github2": "0.1.10",
     "passport-google-oauth20": "1.0.0",
+    "passport-oauth": "1.0.0",
     "passport-twitter": "1.0.4",
     "request": "2.74.0",
     "session-file-store": "0.2.2",
-    "wicked-sdk": "^0.11.1"
+    "wicked-sdk": "^0.11.3"
   },
   "jshintConfig": {
     "node": true,

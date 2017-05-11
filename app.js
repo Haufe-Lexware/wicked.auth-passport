@@ -16,6 +16,7 @@ const google = require('./providers/google');
 const github = require('./providers/github');
 const twitter = require('./providers/twitter');
 const facebook = require('./providers/facebook');
+const adfs = require('./providers/adfs');
 const utils = require('./providers/utils');
 
 // Use default options, see https://www.npmjs.com/package/session-file-store
@@ -93,6 +94,7 @@ app.initApp = function (callback) {
     app.use(basePath + '/github', github);
     app.use(basePath + '/twitter', twitter);
     app.use(basePath + '/facebook', facebook);
+    app.use(basePath + '/adfs', adfs);
 
     // CORS enable this end point
     app.get(basePath + '/profile', utils.cors(), function (req, res, next) {

@@ -1,6 +1,6 @@
 {
   "name": "wicked.auth-passport",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "description": "Authorization Server for federating Identites via Passport",
   "main": "bin/auth-passport",
   "scripts": {

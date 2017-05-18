@@ -44,7 +44,7 @@ const wickedOptions = {
 };
 
 async.series({
-    init: callback => wicked.initialize(callback),
+    init: callback => wicked.initialize(wickedOptions, callback),
     waitForKong: callback => wicked.awaitKongAdapter(callback),
     initMachineUser: callback => wicked.initMachineUser(authServerId, callback),
     authServerConfig: callback => wicked.apiGet('auth-servers/' + authServerId, callback),

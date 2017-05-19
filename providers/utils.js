@@ -157,6 +157,16 @@ utils.splitName = function (fullName, username) {
     return name;
 };
 
+utils.makeFullName = function (familyName, givenName) {
+    if (familyName && givenName)
+        return givenName + ' ' + familyName;
+    if (familyName)
+        return familyName;
+    if (givenName)
+        return givenName;
+    return 'Unknown Username';
+};
+
 utils.makeUsername = function (fullName, username) {
     debug('makeUsername(): fullName = ' + fullName + ', username = ' + username);
     if (username)

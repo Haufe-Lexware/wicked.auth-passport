@@ -188,7 +188,9 @@ Extend the `auth-passport.json` file with the following property:
       "_ADFS_Reader": ["read"],
       "_ADFS_Writer": ["read", "write"],
       "_ADFS_Admin": ["read", "write", "admin"]
-      // These are just examples
+      // These are just examples, but the mapping must look like this
+      // "<group name>": ["array", "of", "scope", "names"]
+      // auth-passport will convert all group names to lower case for comparison
     }
   }
 ```

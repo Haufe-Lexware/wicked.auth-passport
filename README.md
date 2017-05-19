@@ -6,7 +6,7 @@ This is a sample implementation of an Authorization Server which uses a node.js 
 
 Things to consider before using this component:
 
-* This Authorization Server does not do any kind of Authorization (scopes are not supported),
+* This Authorization Server only supports ADFS Group to scope authorization, for all other (social) logins, Authentication equals Authorization (no separate authorization)
 * The Authentication with any IdP supported by this component is considered enough to authorize the use of the API
 
 ## How to use
@@ -17,8 +17,9 @@ Things to consider before using this component:
 * GitHub
 * Facebook
 * Twitter
+* ADFS (Active Directory Federation Services)
 
-(More to come, pull requests are welcome, it's fairly straight forward, ADFS is next on list).
+File an issue or a Pull Request if you need something additionally.
 
 ## Add `auth-passport` to your environment (using `docker-compose`)
 
@@ -41,7 +42,7 @@ services:
     restart: unless-stopped
 ```
 
-In case you are using different deployment methods of your API Portal, this may differ for your setup (e.g. `docker swarm`).
+In case you are using different deployment methods of your API Portal, this may differ for your setup (e.g. for Docker Swarm or Kubernetes).
 
 ## Configuring Google Login
 
@@ -67,7 +68,7 @@ Add the following file called `auth-server.json` in your configuration's `static
 {
   "id": "auth-passport",
   "name": "auth-passport",
-  "desc": "Authorization Server based on Social Login",
+  "desc": "Authorization Server based on passport.js",
   "url": "https://${PORTAL_NETWORK_APIHOST}/auth-server/<idp>/api/{{apiId}}?client_id=(your app's client id)&response_type=token&redirect_uri=<your app's redirect uri>[&state=<client state>]",
   "config": {
     "api": {
@@ -99,7 +100,7 @@ This code will expose the authorization server via Kong, at `https://<your api h
 It is advisable to introduce environment variables for `clientId` and `clientSecret`, to (1) be able to have different settings for different environments, and (2) to encrypt (at least) the client secret in your configuration. Use the kickstarter to do this, e.g. by changing the JSON to 
 
 ```json
-   ...
+   // ...
    "google": {
       "clientId": "${GOOGLE_AUTH_CLIENTID}",
       "clientSecret": "${GOOGLE_AUTH_CLIENTSECRET}",
@@ -115,7 +116,7 @@ Extend the `auth-passport.json` file with the following property:
 
 ```json
 {
-   ...
+   // ...
    "github": {
      "clientId": "${GITHUB_AUTH_CLIENTID}",
       "clientSecret": "${GITHUB_AUTH_CLIENTSECRET}",
@@ -132,7 +133,7 @@ Extend the `auth-passport.json` file with the following property:
 
 ```json
 {
-  ...
+  // ...
   "twitter": {
     "consumerKey": "${TWITTER_AUTH_CONSUMERKEY}",
     "consumerSecret": "${TWITTER_AUTH_CONSUMERSECRET}",
@@ -149,7 +150,7 @@ Extend the `auth-passport.json` file with the following property:
 
 ```json
 {
-  ...
+  // ...
   "facebook": {
     "clientId": "${FACEBOOK_AUTH_CLIENTID}",
     "clientSecret": "${FACEBOOK_AUTH_CLIENTSECRET}",
@@ -196,6 +197,8 @@ Extend the `auth-passport.json` file with the following property:
 ```
 
 The `scopes` property is optional. Specify ADFS Group names to OAuth2 scope mappings here; this enables you to assign scopes automatically (authorize) via ADFS groups, which can be really useful.
+
+Open up the environments with the Kickstarter, then specify the correct values for the given environment variables.
 
 ## Retrieving generic user profile
 

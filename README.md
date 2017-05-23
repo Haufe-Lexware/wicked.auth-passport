@@ -181,7 +181,7 @@ Extend the `auth-passport.json` file with the following property:
       "groups": "group",
       "family_name": "family_name",
       "given_name": "given_name",
-      "email": "email",
+      "email": "email"
       // Add more if you need
     },
     // This is optional, and can be designed as needed:

@@ -131,6 +131,6 @@ function onListening() {
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
     console.log('=====================================');
     console.log(' Passport Auth Server up and running');
-    console.log('===========))========================');
+    console.log('=====================================');
     debug('Listening on ' + bind);
 }

@@ -1,14 +1,13 @@
 'use strict';
 /* jshint loopfunc: true */
 
-const adfs = require('express').Router();
 const passport = require('passport');
-//const request = require('request');
 const debug = require('debug')('auth-passport:adfs');
 const OAuth2Strategy = require('passport-oauth').OAuth2Strategy;
 const jwt = require('jsonwebtoken');
-// const fs = require('fs');
 const wicked = require('wicked-sdk');
+
+const adfs = require('express').Router();
 
 const utils = require('./utils');
 
@@ -35,8 +34,8 @@ adfs.init = function (app, authConfig) {
         throw new Error('In auth-server configuration, property "adfs", the property "callbackUrl" is missing.');
     if (!authConfig.adfs.tokenUrl)
         throw new Error('In auth-server configuration, property "adfs", the property "tokenUrl" is missing.');
-    if (!authConfig.adfs.authorizeUrl)
-        throw new Error('In auth-server configuration, property "adfs", the property "authorizeUrl" is missing.');
+    if (!authConfig.adfs.authorizationUrl)
+        throw new Error('In auth-server configuration, property "adfs", the property "authorizationUrl" is missing.');
     if (!authConfig.adfs.resource)
         throw new Error('In auth-server configuration, property "adfs", the property "resource" is missing.');
     if (authConfig.adfs.verifyCert && !authConfig.adfs.publicCert)
@@ -59,7 +58,7 @@ adfs.init = function (app, authConfig) {
         // Normalize all group names to lowercase
         const tempScopes = {};
         for (let key in authConfig.adfs.scopes) {
-            tempScopes[key.toLowerCase()] = authConfig.adfs[key];
+            tempScopes[key.toLowerCase()] = authConfig.adfs.scopes[key];
         }
         debug('Lower cased ADFS group names:');
         debug(JSON.stringify(tempScopes));
@@ -69,7 +68,7 @@ adfs.init = function (app, authConfig) {
     // Here we need to pass in the explicit name of the strategy,
     // as OAuth2Strategy is a generic strategy, in contrast to the other ones.
     passport.use('adfs', new OAuth2Strategy({
-        authorizationURL: authConfig.adfs.authorizeUrl,
+        authorizationURL: authConfig.adfs.authorizationUrl,
         tokenURL: authConfig.adfs.tokenUrl,
         clientID: authConfig.adfs.clientId, // This is the ID of the ADFSClient created in ADFS via PowerShell
         clientSecret: authConfig.adfs.clientSecret, // This is ignored but required by the OAuth2Strategy
@@ -174,3 +173,5 @@ function getScope(profile, authConfig) {
     debug('Resulting scope: ' + JSON.stringify(scope));
     return scope;
 }
+
+module.exports = adfs;

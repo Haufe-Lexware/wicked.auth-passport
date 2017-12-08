@@ -37,28 +37,28 @@ oauth2.init = function (app, authConfig) {
     if (!authConfig.oauth2.tokenURL)
         throw new Error('In auth-server configuration, property "oauth2", the property "tokenURL" is missing.');
 
-    passport.use(new OAuth2Strategy({
-        clientID: authConfig.oauth2.clientId,
-        clientSecret: authConfig.oauth2.clientSecret,
-        callbackURL: authConfig.oauth2.callbackUrl,
-        authorizationURL: authConfig.oauth2.authorizationURL,
-        tokenURL: authConfig.oauth2.tokenURL,
-        passReqToCallback: true
-    }, function (accessToken, refreshToken, profile, done) {
-        debug('Oauth2 Authenticate succeeded.');
-        normalizeProfile(profile, accessToken, function (err, userProfile) {
-            debug('callback normalizeProfile()');
-            if (err) {
-                debug('But normalizeProfile failed.');
-                console.error(err);
-                console.error(err.stack);
-                return done(err);
-            }
-            debug('Normalized Profile:');
-            debug(userProfile);
-            done(null, userProfile);
-        });
-    }));
+        passport.use(new OAuth2Strategy({
+            clientID: authConfig.oauth2.clientId,
+            clientSecret: authConfig.oauth2.clientSecret,
+            callbackURL: authConfig.oauth2.callbackUrl,
+            authorizationURL: authConfig.oauth2.authorizationURL,
+            tokenURL: authConfig.oauth2.tokenURL,
+            passReqToCallback: true
+        }, function (req, accessToken, refreshToken, profile, done) {
+            debug('Oauth2 Authenticate succeeded.' + ' ' + accessToken + ' ' + refreshToken + ' ' + profile);
+            normalizeProfile(profile, accessToken, authConfig, function (err, userProfile) {
+                debug('callback normalizeProfile()');
+                if (err) {
+                    debug('But normalizeProfile failed.');
+                    console.error(err);
+                    console.error(err.stack);
+                    return done(err);
+                }
+                debug('Normalized Profile:');
+                debug(userProfile);
+                done(null, userProfile);
+            });
+        }));
 
     const authenticateWithOauth2 = passport.authenticate('oauth2', { scope: ['user:email'] });
     const authenticateCallback = passport.authenticate('oauth2', oauth2.authenticateSettings);
@@ -69,8 +69,8 @@ oauth2.init = function (app, authConfig) {
     debug('Configured oauth2 authentication.');
 };
 
-function normalizeProfile(profile, accessToken, callback) {
-    debug('normalizeProfile()');
+function normalizeProfile(profile, accessToken, authConfig, callback) {
+    debug('normalizeProfile(): ' + accessToken);
     var decodedProfile = jwt.decode(accessToken);
     var defaultGroups = [];
     if(decodedProfile['group']){

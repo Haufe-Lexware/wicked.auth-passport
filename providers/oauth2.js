@@ -77,7 +77,8 @@ function normalizeProfile(profile, accessToken, authConfig, callback) {
       defaultGroups = decodedProfile['group'];
     }
     const userProfile = {
-      customId: decodedProfile[authConfig.oauth2.customIdField],
+      id: "oauth2:"+decodedProfile[authConfig.oauth2.customIdField],
+      sub: "oauth2:"+decodedProfile[authConfig.oauth2.customIdField],
       firstName: decodedProfile[authConfig.oauth2.firstNameField],
       lastName: decodedProfile[authConfig.oauth2.lastNameField],
       validated: true, // In Oauth2 we trust

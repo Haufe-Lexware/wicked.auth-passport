@@ -18,7 +18,13 @@
     "wicked",
     "apim",
     "api",
-    "management"
+    "management",
+    "google",
+    "github",
+    "facebook",
+    "twitter",
+    "adfs",
+    "oauth2"
   ],
   "author": "Martin Danielsson <martin.danielsson@haufe-lexware.com>",
   "license": "Apache-2.0",

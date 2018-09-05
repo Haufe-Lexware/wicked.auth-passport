@@ -1,3 +1,14 @@
+# Outdated Project
+
+This project is/will be outdated as soon as wicked 1.0.0 is released; wicked 1.0.0 contains a default authorization server which is able to perform any task this project could do (plus some more, e.g. SAML).
+
+See also: 
+
+* [http://github.com/Haufe-Lexware/wicked.haufe.io](http://github.com/Haufe-Lexware/wicked.haufe.io)
+* [http://github.com/apim-haufe-io/wicked.portal-auth](http://github.com/apim-haufe-io/wicked.portal-auth)
+
+---
+
 # Passport Authorization Server
 
 This is a sample implementation of an Authorization Server which uses a node.js Passport for authenticating a user, and authorizing the user to create access tokens for use with the OAuth 2.0 implicit grant, e.g. for SPAs.

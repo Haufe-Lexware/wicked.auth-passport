@@ -31,6 +31,7 @@ const google = require('../providers/google');
 const github = require('../providers/github');
 const twitter = require('../providers/twitter');
 const facebook = require('../providers/facebook');
+const oauth2 = require('../providers/oauth2');
 
 /**
  * Create HTTP server.
@@ -62,6 +63,7 @@ async.series({
     github.init(app, app.authConfig);
     twitter.init(app, app.authConfig);
     facebook.init(app, app.authConfig);
+    oauth2.init(app, app.authConfig);
 
     // Simplest kind of serialization and deserialization
     passport.serializeUser(function (user, done) {
